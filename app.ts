@@ -1,39 +1,19 @@
 import * as loki from 'lokijs';
 import * as express from 'express';
-import * as basic from 'express-basic-auth';
+import { getServers } from 'dns';
 
-var app = express();
-app.use(express.json());
+let port:number = 8000;
 
-const adminFilter = basic({ users: { admin: 'P@ssw0rd!' }});
+let server = express();
+server.use(express.json());
 
-const db = new loki(__dirname + '/db.dat', {autosave: true, autoload: true});
-let guests = db.getCollection('guests');
-if (!guests) {
-  guests = db.addCollection('guests');
-}
+//Datenbank
+const db = new loki("loki.json");
+let guests = db.addCollection("guests");
 
 
-app.get('/party', (req, res, next) => {
-  res.send({
-    title: 'Happy new year!',
-    location: 'At my home',
-    date: new Date(2017, 0, 1)
-  });
-});
-
-app.post('/register', (req, res, next) => {
-  if (!req.body.firstName || !req.body.lastName) {
-    res.status(BAD_REQUEST).send('Missing mandatory member(s)');
-  } else {
-    const count = guests.count();
-    if (count < 10) {
-      const newDoc = guests.insert({firstName: req.body.firstName, lastName: req.body.lastName});
-      res.status(CREATED).send(newDoc);
-    } else {
-      res.status(UNAUTHORIZED).send('Sorry, max. number of guests already reached');
-    }
-  }
+server.listen(port, function(){
+    console.log("API is listening");
 });
 
 
@@ -43,4 +23,8 @@ server.get("/party", function(request, response){
         location: "Mitterkirchen",
         date: "22.02.2019"
     })
+})
+
+server.get("/guests", function(request, response){
+    response.send(guests.find());
 })
