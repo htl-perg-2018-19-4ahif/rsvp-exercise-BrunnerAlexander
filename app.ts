@@ -1,4 +1,3 @@
-import {CREATED, BAD_REQUEST, UNAUTHORIZED} from 'http-status-codes';
 import * as loki from 'lokijs';
 import * as express from 'express';
 import * as basic from 'express-basic-auth';
@@ -14,9 +13,6 @@ if (!guests) {
   guests = db.addCollection('guests');
 }
 
-app.get('/guests', adminFilter, (req, res) => {
-  res.send(guests.find());
-});
 
 app.get('/party', (req, res, next) => {
   res.send({
@@ -40,4 +36,11 @@ app.post('/register', (req, res, next) => {
   }
 });
 
-app.listen(8080, () => console.log('API is listening'));
+
+server.get("/party", function(request, response){
+    response.send({
+        name: "birthdayParty",
+        location: "Mitterkirchen",
+        date: "22.02.2019"
+    })
+})
